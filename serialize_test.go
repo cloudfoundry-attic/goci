@@ -22,8 +22,8 @@ var _ = Describe("Saving", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		bndle := &goci.Bndl{
-			Spec: specs.Spec{
-				Version: "abcd",
+			Spec: specs.LinuxSpec{
+				Spec: specs.Spec{Version: "abcd"},
 			},
 			RuntimeSpec: specs.LinuxRuntimeSpec{
 				RuntimeSpec: specs.RuntimeSpec{

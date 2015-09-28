@@ -15,6 +15,10 @@ var _ = Describe("Bundle", func() {
 		initialBundle = goci.Bundle()
 	})
 
+	It("specifies the correct version", func() {
+		Expect(initialBundle.Spec.Version).To(Equal("0.1.0"))
+	})
+
 	Describe("WithProcess", func() {
 		It("adds the process to the bundle", func() {
 			returnedBundle := initialBundle.WithProcess(goci.Process("echo", "foo"))
@@ -74,6 +78,21 @@ var _ = Describe("Bundle", func() {
 		It("does not modify the original bundle", func() {
 			Expect(returnedBundle).NotTo(Equal(initialBundle))
 			Expect(initialBundle.Spec.Mounts).To(HaveLen(0))
+		})
+	})
+
+	Describe("WithResources", func() {
+		BeforeEach(func() {
+			returnedBundle = initialBundle.WithResources(&specs.Resources{DisableOOMKiller: true})
+		})
+
+		It("returns a bundle with the resources added to the runtime spec", func() {
+			Expect(returnedBundle.RuntimeSpec.Linux.Resources).To(Equal(&specs.Resources{DisableOOMKiller: true}))
+		})
+
+		It("does not modify the original bundle", func() {
+			Expect(returnedBundle).NotTo(Equal(initialBundle))
+			Expect(initialBundle.RuntimeSpec.Linux.Resources).To(BeNil())
 		})
 	})
 })

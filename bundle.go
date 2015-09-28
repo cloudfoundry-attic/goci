@@ -4,18 +4,30 @@ import "github.com/cloudfoundry-incubator/goci/specs"
 
 // Bndl represents an in-memory OCI bundle
 type Bndl struct {
-	Spec        specs.Spec
+	Spec        specs.LinuxSpec
 	RuntimeSpec specs.LinuxRuntimeSpec
 }
 
 // Bundle creates a Bndl
 func Bundle() *Bndl {
-	return &Bndl{}
+	return &Bndl{
+		Spec: specs.LinuxSpec{
+			Spec: specs.Spec{
+				Version: "0.1.0",
+			},
+		},
+	}
 }
 
 // WithProcess returns a bundle with the process replaced with the given Process. The original bundle is not modified.
 func (b Bndl) WithProcess(process specs.Process) *Bndl {
 	b.Spec.Process = process
+	return &b
+}
+
+// WithResources returns a bundle with the resources replaced with the given Resources. The original bundle is not modified.
+func (b Bndl) WithResources(resources *specs.Resources) *Bndl {
+	b.RuntimeSpec.Linux.Resources = resources
 	return &b
 }
 
