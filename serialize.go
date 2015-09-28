@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-func (b *Bndle) Save(path string) error {
+func (b *Bndl) Save(path string) error {
 	if err := save(b.Spec, filepath.Join(path, "config.json")); err != nil {
 		return err
 	}

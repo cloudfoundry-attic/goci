@@ -8,6 +8,7 @@ import (
 	"path"
 
 	"github.com/cloudfoundry-incubator/goci"
+	"github.com/cloudfoundry-incubator/goci/specs"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -20,13 +21,15 @@ var _ = Describe("Saving", func() {
 		tmp, err = ioutil.TempDir("", "gocitest")
 		Expect(err).NotTo(HaveOccurred())
 
-		bndle := &goci.Bndle{
-			Spec: goci.Spec{
+		bndle := &goci.Bndl{
+			Spec: specs.Spec{
 				Version: "abcd",
 			},
-			RuntimeSpec: goci.RuntimeSpec{
-				Mounts: map[string]goci.RuntimeSpecMount{
-					"foo": goci.RuntimeSpecMount{},
+			RuntimeSpec: specs.LinuxRuntimeSpec{
+				RuntimeSpec: specs.RuntimeSpec{
+					Mounts: map[string]specs.Mount{
+						"foo": specs.Mount{},
+					},
 				},
 			},
 		}
@@ -54,13 +57,6 @@ var _ = Describe("Saving", func() {
 		Expect(runtimeJson).To(HaveKeyWithValue("mounts", HaveKey("foo")))
 	})
 })
-
-func read(path string) []byte {
-	b, err := ioutil.ReadAll(mustOpen(path))
-	Expect(err).NotTo(HaveOccurred())
-
-	return b
-}
 
 func mustOpen(path string) io.Reader {
 	r, err := os.Open(path)

@@ -1,31 +1,33 @@
 package goci
 
-// Bndle represents an in-memory OCI bundle
-type Bndle struct {
-	Spec        Spec
-	RuntimeSpec RuntimeSpec
+import "github.com/cloudfoundry-incubator/goci/specs"
+
+// Bndl represents an in-memory OCI bundle
+type Bndl struct {
+	Spec        specs.Spec
+	RuntimeSpec specs.LinuxRuntimeSpec
 }
 
-// Bundle creats a bndle
-func Bundle() Bndle {
-	return Bndle{}
+// Bundle creates a Bndl
+func Bundle() *Bndl {
+	return &Bndl{}
 }
 
-// WithProcess sets the bundle's process to the given process
-func (b Bndle) WithProcess(process SpecProcess) Bndle {
+// SetProcess sets the bundle's process to the given process and returns the modified bundle.
+func (b *Bndl) SetProcess(process specs.Process) *Bndl {
 	b.Spec.Process = process
 	return b
 }
 
-// WithMounts returns a bundle with the given mounts added
-func (b Bndle) WithMounts(mounts ...Mount) Bndle {
+// AddMounts adds the given mounts to the existing mounts and returns the modified bundle.
+func (b *Bndl) AddMounts(mounts ...Mount) *Bndl {
 	if b.RuntimeSpec.Mounts == nil {
-		b.RuntimeSpec.Mounts = make(map[string]RuntimeSpecMount)
+		b.RuntimeSpec.Mounts = make(map[string]specs.Mount)
 	}
 
 	for _, m := range mounts {
-		b.Spec.Mounts = append(b.Spec.Mounts, SpecMount{Name: m.Name, Path: m.Destination})
-		b.RuntimeSpec.Mounts[m.Name] = RuntimeSpecMount{
+		b.Spec.Mounts = append(b.Spec.Mounts, specs.MountPoint{Name: m.Name, Path: m.Destination})
+		b.RuntimeSpec.Mounts[m.Name] = specs.Mount{
 			Source:  m.Source,
 			Type:    m.Type,
 			Options: m.Options,
@@ -35,39 +37,9 @@ func (b Bndle) WithMounts(mounts ...Mount) Bndle {
 	return b
 }
 
-// Process returns an OCI Process struct with the given args
-func Process(args ...string) SpecProcess {
-	return SpecProcess{Args: args}
-}
-
-// Spec mirrors the github.com/opencontainers/specs.Spec struct but allows it to compile
-// on non-linux systems.
-type Spec struct {
-	Version string      `json:"version"`
-	Mounts  []SpecMount `json:"mounts"`
-	Process SpecProcess `json:"process"`
-}
-
-// RuntimeSpec mirrors the github.com/opencontainers/specs.RuntimeSpec struct but allows it to compile
-// on non-linux systems.
-type RuntimeSpec struct {
-	Mounts map[string]RuntimeSpecMount `json:"mounts"`
-}
-
-// Process mirrors the "github.com/opencontainers/specs".Process struct
-type SpecProcess struct {
-	Args []string `json:"args"`
-}
-
-type SpecMount struct {
-	Name string
-	Path string
-}
-
-type RuntimeSpecMount struct {
-	Type    string
-	Source  string
-	Options []string
+// Process returns an OCI Process struct with the given args.
+func Process(args ...string) specs.Process {
+	return specs.Process{Args: args}
 }
 
 type Mount struct {

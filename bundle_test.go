@@ -2,31 +2,34 @@ package goci_test
 
 import (
 	"github.com/cloudfoundry-incubator/goci"
+	"github.com/cloudfoundry-incubator/goci/specs"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Bundle", func() {
-	var (
-		initialBundle goci.Bndle
-	)
+	var initialBundle *goci.Bndl
+	var returnedBundle *goci.Bndl
 
 	BeforeEach(func() {
 		initialBundle = goci.Bundle()
 	})
 
-	Describe("WithProcess", func() {
+	Describe("SetProcess", func() {
 		It("adds the process to the bundle", func() {
-			bundle := goci.Bundle().WithProcess(goci.Process("echo", "foo"))
-			Expect(bundle.Spec.Process).To(Equal(goci.SpecProcess{Args: []string{"echo", "foo"}}))
+			returnedBundle := initialBundle.SetProcess(goci.Process("echo", "foo"))
+			Expect(returnedBundle.Spec.Process).To(Equal(specs.Process{Args: []string{"echo", "foo"}}))
+		})
+
+		It("returns the modified bundle", func() {
+			returnedBundle := initialBundle.SetProcess(goci.Process("echo", "foo"))
+			Expect(returnedBundle).To(Equal(initialBundle))
 		})
 	})
 
-	Describe("WithMounts", func() {
-		var bundle goci.Bndle
-
+	Describe("AddMounts", func() {
 		BeforeEach(func() {
-			bundle = goci.Bundle().WithMounts(
+			returnedBundle = initialBundle.AddMounts(
 				goci.Mount{
 					Name:        "apple",
 					Type:        "apple_fs",
@@ -50,22 +53,26 @@ var _ = Describe("Bundle", func() {
 		})
 
 		It("returns a bundle with the mounts added to the spec", func() {
-			Expect(bundle.Spec.Mounts).To(ContainElement(goci.SpecMount{Name: "banana", Path: "/banana"}))
-			Expect(bundle.Spec.Mounts).To(ContainElement(goci.SpecMount{Name: "apple", Path: "/apple"}))
+			Expect(initialBundle.Spec.Mounts).To(ContainElement(specs.MountPoint{Name: "banana", Path: "/banana"}))
+			Expect(initialBundle.Spec.Mounts).To(ContainElement(specs.MountPoint{Name: "apple", Path: "/apple"}))
 		})
 
 		It("returns a bundle with the mounts mapped in the runtime spec", func() {
-			Expect(bundle.RuntimeSpec.Mounts).To(HaveKeyWithValue("banana", goci.RuntimeSpecMount{
+			Expect(initialBundle.RuntimeSpec.Mounts).To(HaveKeyWithValue("banana", specs.Mount{
 				Type:    "banana_fs",
 				Source:  "banana_device",
 				Options: []string{"yellow", "fresh"},
 			}))
 
-			Expect(bundle.RuntimeSpec.Mounts).To(HaveKeyWithValue("apple", goci.RuntimeSpecMount{
+			Expect(initialBundle.RuntimeSpec.Mounts).To(HaveKeyWithValue("apple", specs.Mount{
 				Type:    "apple_fs",
 				Source:  "iDevice",
 				Options: []string{"healthy", "shiny"},
 			}))
+		})
+
+		It("returns the modified bundle", func() {
+			Expect(returnedBundle).To(Equal(initialBundle))
 		})
 	})
 })
