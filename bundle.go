@@ -13,14 +13,14 @@ func Bundle() *Bndl {
 	return &Bndl{}
 }
 
-// SetProcess sets the bundle's process to the given process and returns the modified bundle.
-func (b *Bndl) SetProcess(process specs.Process) *Bndl {
+// WithProcess returns a bundle with the process replaced with the given Process. The original bundle is not modified.
+func (b Bndl) WithProcess(process specs.Process) *Bndl {
 	b.Spec.Process = process
-	return b
+	return &b
 }
 
-// AddMounts adds the given mounts to the existing mounts and returns the modified bundle.
-func (b *Bndl) AddMounts(mounts ...Mount) *Bndl {
+// WithMounts returns a bundle with the given mounts added. The original bundle is not modified.
+func (b Bndl) WithMounts(mounts ...Mount) *Bndl {
 	if b.RuntimeSpec.Mounts == nil {
 		b.RuntimeSpec.Mounts = make(map[string]specs.Mount)
 	}
@@ -34,7 +34,7 @@ func (b *Bndl) AddMounts(mounts ...Mount) *Bndl {
 		}
 	}
 
-	return b
+	return &b
 }
 
 // Process returns an OCI Process struct with the given args.
