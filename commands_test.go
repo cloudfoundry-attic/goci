@@ -14,7 +14,8 @@ var _ = Describe("Commands", func() {
 	Describe("StartCommand", func() {
 		It("creates an *exec.Cmd to start a bundle", func() {
 			cmd := goci.StartCommand("my-bundle-path", "my-bundle-id")
-			Expect(cmd.Args).To(Equal([]string{"funC", "--id", "my-bundle-id", "start", "my-bundle-path"}))
+			Expect(cmd.Args).To(Equal([]string{"funC", "--id", "my-bundle-id", "start"}))
+			Expect(cmd.Dir).To(Equal("my-bundle-path"))
 		})
 	})
 

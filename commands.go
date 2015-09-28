@@ -22,7 +22,8 @@ func ExecCommand(id, processJSONPath string) *exec.Cmd {
 func (runc RuncBinary) StartCommand(path, id string) *exec.Cmd {
 	return &exec.Cmd{
 		Path: string(runc),
-		Args: []string{string(runc), "--id", id, "start", path},
+		Args: []string{string(runc), "--id", id, "start"},
+		Dir:  path,
 	}
 }
 
