@@ -31,6 +31,24 @@ func (b Bndl) WithResources(resources *specs.Resources) *Bndl {
 	return &b
 }
 
+// WithNamespaces returns a bundle with the given namespaces added. The original bundle is not modified.
+func (b Bndl) WithNamespaces(namespaces ...specs.Namespace) *Bndl {
+	for _, namespace := range namespaces {
+		b.RuntimeSpec.Linux.Namespaces = append(b.RuntimeSpec.Linux.Namespaces, namespace)
+	}
+
+	return &b
+}
+
+// WithDevices returns a bundle with the given devices added. The original bundle is not modified.
+func (b Bndl) WithDevices(devices ...specs.Device) *Bndl {
+	for _, device := range devices {
+		b.RuntimeSpec.Linux.Devices = append(b.RuntimeSpec.Linux.Devices, device)
+	}
+
+	return &b
+}
+
 // WithMounts returns a bundle with the given mounts added. The original bundle is not modified.
 func (b Bndl) WithMounts(mounts ...Mount) *Bndl {
 	if b.RuntimeSpec.Mounts == nil {

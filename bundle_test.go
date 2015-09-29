@@ -95,4 +95,24 @@ var _ = Describe("Bundle", func() {
 			Expect(initialBundle.RuntimeSpec.Linux.Resources).To(BeNil())
 		})
 	})
+
+	Describe("WithNamespaces", func() {
+		BeforeEach(func() {
+			returnedBundle = initialBundle.WithNamespaces(specs.Namespace{Type: specs.NetworkNamespace})
+		})
+
+		It("returns a bundle with the namespaces added to the runtime spec", func() {
+			Expect(returnedBundle.RuntimeSpec.Linux.Namespaces).To(ConsistOf(specs.Namespace{Type: specs.NetworkNamespace}))
+		})
+	})
+
+	Describe("WithDevices", func() {
+		BeforeEach(func() {
+			returnedBundle = initialBundle.WithDevices(specs.Device{Path: "test/path"})
+		})
+
+		It("returns a bundle with the namespaces added to the runtime spec", func() {
+			Expect(returnedBundle.RuntimeSpec.Linux.Devices).To(ConsistOf(specs.Device{Path: "test/path"}))
+		})
+	})
 })
