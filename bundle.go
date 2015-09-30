@@ -34,6 +34,11 @@ func (b Bndl) WithProcess(process specs.Process) *Bndl {
 	return &b
 }
 
+func (b Bndl) WithRootFS(absolutePath string) *Bndl {
+	b.Spec.Root = specs.Root{Path: absolutePath}
+	return &b
+}
+
 // WithResources returns a bundle with the resources replaced with the given Resources. The original bundle is not modified.
 func (b Bndl) WithResources(resources *specs.Resources) *Bndl {
 	b.RuntimeSpec.Linux.Resources = resources
