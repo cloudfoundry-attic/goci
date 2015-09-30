@@ -19,6 +19,15 @@ func Bundle() *Bndl {
 	}
 }
 
+var (
+	NetworkNamespace = specs.Namespace{Type: specs.NetworkNamespace}
+	UserNamespace    = specs.Namespace{Type: specs.UserNamespace}
+	PIDNamespace     = specs.Namespace{Type: specs.PIDNamespace}
+	IPCNamespace     = specs.Namespace{Type: specs.IPCNamespace}
+	UTSNamespace     = specs.Namespace{Type: specs.UTSNamespace}
+	MountNamespace   = specs.Namespace{Type: specs.MountNamespace}
+)
+
 // WithProcess returns a bundle with the process replaced with the given Process. The original bundle is not modified.
 func (b Bndl) WithProcess(process specs.Process) *Bndl {
 	b.Spec.Process = process
