@@ -45,21 +45,24 @@ func (b Bndl) WithResources(resources *specs.Resources) *Bndl {
 	return &b
 }
 
-// WithNamespaces returns a bundle with the given namespaces added. The original bundle is not modified.
-func (b Bndl) WithNamespaces(namespaces ...specs.Namespace) *Bndl {
-	for _, namespace := range namespaces {
-		b.RuntimeSpec.Linux.Namespaces = append(b.RuntimeSpec.Linux.Namespaces, namespace)
-	}
+// WithNamespace returns a bundle with the given namespace in the list of namespaces. The bundle is not modified, but any
+// existing namespace of this type will be replaced.
+func (b Bndl) WithNamespace(ns specs.Namespace) *Bndl {
+	slice := NamespaceSlice(b.RuntimeSpec.Linux.Namespaces)
+	b.RuntimeSpec.Linux.Namespaces = []specs.Namespace(slice.Set(ns))
+	return &b
+}
 
+// WithNamespaces returns a bundle with the given namespaces. The original bundle is not modified, but the original
+// set of namespaces is replaced in the returned bundle.
+func (b Bndl) WithNamespaces(namespaces ...specs.Namespace) *Bndl {
+	b.RuntimeSpec.Linux.Namespaces = namespaces
 	return &b
 }
 
 // WithDevices returns a bundle with the given devices added. The original bundle is not modified.
 func (b Bndl) WithDevices(devices ...specs.Device) *Bndl {
-	for _, device := range devices {
-		b.RuntimeSpec.Linux.Devices = append(b.RuntimeSpec.Linux.Devices, device)
-	}
-
+	b.RuntimeSpec.Linux.Devices = devices
 	return &b
 }
 
@@ -79,6 +82,19 @@ func (b Bndl) WithMounts(mounts ...Mount) *Bndl {
 	}
 
 	return &b
+}
+
+type NamespaceSlice []specs.Namespace
+
+func (slice NamespaceSlice) Set(ns specs.Namespace) NamespaceSlice {
+	for i, namespace := range slice {
+		if namespace.Type == ns.Type {
+			slice[i] = ns
+			return slice
+		}
+	}
+
+	return append(slice, ns)
 }
 
 // Process returns an OCI Process struct with the given args.
