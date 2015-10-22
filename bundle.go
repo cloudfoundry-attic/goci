@@ -1,6 +1,8 @@
 package goci
 
-import "github.com/cloudfoundry-incubator/goci/specs"
+import (
+	"github.com/cloudfoundry-incubator/goci/specs"
+)
 
 // Bndl represents an in-memory OCI bundle
 type Bndl struct {
@@ -63,6 +65,12 @@ func (b Bndl) WithNamespaces(namespaces ...specs.Namespace) *Bndl {
 // WithDevices returns a bundle with the given devices added. The original bundle is not modified.
 func (b Bndl) WithDevices(devices ...specs.Device) *Bndl {
 	b.RuntimeSpec.Linux.Devices = devices
+	return &b
+}
+
+// WithCapabilities returns a bundle with the given capabilities added. The original bundle is not modified.
+func (b Bndl) WithCapabilities(capabilities ...string) *Bndl {
+	b.Spec.Linux.Capabilities = capabilities
 	return &b
 }
 

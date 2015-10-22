@@ -19,6 +19,19 @@ var _ = Describe("Bundle", func() {
 		Expect(initialBundle.Spec.Version).To(Equal("0.1.0"))
 	})
 
+	Describe("WithCapabilities", func(){
+		It("adds capabilities to the bundle", func(){
+			returnedBundle := initialBundle.WithCapabilities("growtulips", "waterspuds")
+			Expect(returnedBundle.Spec.Linux.Capabilities).To(ContainElement("growtulips"))
+			Expect(returnedBundle.Spec.Linux.Capabilities).To(ContainElement("waterspuds"))
+		})
+
+		It("does not modify the initial bundle", func() {
+			returnedBundle := initialBundle.WithCapabilities("growtulips", "waterspuds")
+			Expect(returnedBundle).NotTo(Equal(initialBundle))
+		})
+	})
+
 	Describe("WithProcess", func() {
 		It("adds the process to the bundle", func() {
 			returnedBundle := initialBundle.WithProcess(goci.Process("echo", "foo"))
