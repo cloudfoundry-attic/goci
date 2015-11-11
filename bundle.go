@@ -53,6 +53,11 @@ func (b Bndl) WithNamespace(ns specs.Namespace) *Bndl {
 	return &b
 }
 
+func (b Bndl) WithCapabilities(caps []string) *Bndl {
+	b.Spec.Linux.Capabilities = caps
+	return &b
+}
+
 // WithNamespaces returns a bundle with the given namespaces. The original bundle is not modified, but the original
 // set of namespaces is replaced in the returned bundle.
 func (b Bndl) WithNamespaces(namespaces ...specs.Namespace) *Bndl {

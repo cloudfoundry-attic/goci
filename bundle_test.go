@@ -38,6 +38,14 @@ var _ = Describe("Bundle", func() {
 		})
 	})
 
+	Describe("WithCapabilities", func() {
+		It("sets the capabilities", func() {
+			capabilities := []string{"banana", "apple", "orange"}
+			returnedBundle := initialBundle.WithCapabilities(capabilities)
+			Expect(returnedBundle.Spec.Linux.Capabilities).To(Equal(capabilities))
+		})
+	})
+
 	Describe("WithMounts", func() {
 		BeforeEach(func() {
 			returnedBundle = initialBundle.WithMounts(
