@@ -15,7 +15,7 @@ func Bundle() *Bndl {
 	return &Bndl{
 		Spec: specs.LinuxSpec{
 			Spec: specs.Spec{
-				Version: "0.1.0",
+				Version: "0.2.0",
 			},
 		},
 	}

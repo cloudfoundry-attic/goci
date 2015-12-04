@@ -16,11 +16,11 @@ var _ = Describe("Bundle", func() {
 	})
 
 	It("specifies the correct version", func() {
-		Expect(initialBundle.Spec.Version).To(Equal("0.1.0"))
+		Expect(initialBundle.Spec.Version).To(Equal("0.2.0"))
 	})
 
-	Describe("WithCapabilities", func(){
-		It("adds capabilities to the bundle", func(){
+	Describe("WithCapabilities", func() {
+		It("adds capabilities to the bundle", func() {
 			returnedBundle := initialBundle.WithCapabilities("growtulips", "waterspuds")
 			Expect(returnedBundle.Spec.Linux.Capabilities).To(ContainElement("growtulips"))
 			Expect(returnedBundle.Spec.Linux.Capabilities).To(ContainElement("waterspuds"))
