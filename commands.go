@@ -18,20 +18,30 @@ func ExecCommand(id, processJSONPath string) *exec.Cmd {
 	return DefaultRuncBinary.ExecCommand(id, processJSONPath)
 }
 
+// KillCommand creates a kill command using the default runc binary name.
+func KillCommand(id, signal string) *exec.Cmd {
+	return DefaultRuncBinary.KillCommand(id, signal)
+}
+
 // StartCommand returns an *exec.Cmd that, when run, will execute a given bundle.
 func (runc RuncBinary) StartCommand(path, id string) *exec.Cmd {
-	return &exec.Cmd{
-		Path: string(runc),
-		Args: []string{string(runc), "--id", id, "start"},
-		Dir:  path,
-	}
+	cmd := exec.Command(string(runc), "--id", id, "start")
+	cmd.Dir = path
+	return cmd
 }
 
 // ExecCommand returns an *exec.Cmd that, when run, will execute a process spec
 // in a running container.
 func (runc RuncBinary) ExecCommand(id, processJSONPath string) *exec.Cmd {
-	return &exec.Cmd{
-		Path: string(runc),
-		Args: []string{string(runc), "--id", id, "exec", processJSONPath},
-	}
+	return exec.Command(
+		string(runc), "--id", id, "exec", processJSONPath,
+	)
+}
+
+// KillCommand returns an *exec.Cmd that, when run, will signal the running
+// container.
+func (runc RuncBinary) KillCommand(id, signal string) *exec.Cmd {
+	return exec.Command(
+		string(runc), "--id", id, "kill", signal,
+	)
 }

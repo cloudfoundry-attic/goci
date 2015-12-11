@@ -25,4 +25,11 @@ var _ = Describe("Commands", func() {
 			Expect(cmd.Args).To(Equal([]string{"funC", "--id", "my-bundle-id", "exec", "my-process-json.json"}))
 		})
 	})
+
+	Describe("KillCommand", func() {
+		It("creates an *exec.Cmd to signal the bundle", func() {
+			cmd := goci.KillCommand("my-bundle-id", "TERM")
+			Expect(cmd.Args).To(Equal([]string{"funC", "--id", "my-bundle-id", "kill", "TERM"}))
+		})
+	})
 })
