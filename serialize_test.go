@@ -14,14 +14,17 @@ import (
 )
 
 var _ = Describe("Saving", func() {
-	var tmp string
+	var (
+		tmp   string
+		bndle *goci.Bndl
+	)
 
 	BeforeEach(func() {
 		var err error
 		tmp, err = ioutil.TempDir("", "gocitest")
 		Expect(err).NotTo(HaveOccurred())
 
-		bndle := &goci.Bndl{
+		bndle = &goci.Bndl{
 			Spec: specs.LinuxSpec{
 				Spec: specs.Spec{Version: "abcd"},
 			},
@@ -55,6 +58,34 @@ var _ = Describe("Saving", func() {
 		Expect(json.NewDecoder(mustOpen(path.Join(tmp, "runtime.json"))).Decode(&runtimeJson)).To(Succeed())
 
 		Expect(runtimeJson).To(HaveKeyWithValue("mounts", HaveKey("foo")))
+	})
+
+	Describe("Load", func() {
+		Context("when config.json and runtime.json exist", func() {
+			It("loads the bundle from runtime.json and config.json", func() {
+				bundleLoader := &goci.BndlLoader{}
+				loadedBundle, _ := bundleLoader.Load(tmp)
+				Expect(loadedBundle).To(Equal(bndle))
+			})
+		})
+
+		Context("when config.json does not exist", func() {
+			It("returns an error", func() {
+				Expect(os.Remove(path.Join(tmp, "config.json"))).To(Succeed())
+				bundleLoader := &goci.BndlLoader{}
+				_, err := bundleLoader.Load(tmp)
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when runtime.json does not exist", func() {
+			It("returns an error", func() {
+				Expect(os.Remove(path.Join(tmp, "runtime.json"))).To(Succeed())
+				bundleLoader := &goci.BndlLoader{}
+				_, err := bundleLoader.Load(tmp)
+				Expect(err).To(HaveOccurred())
+			})
+		})
 	})
 })
 
