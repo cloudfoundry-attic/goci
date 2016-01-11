@@ -178,6 +178,14 @@ var _ = Describe("Bundle", func() {
 		})
 	})
 
+	Describe("GetRootfsPath", func() {
+		It("returns the rootfs path", func() {
+			bndl := &goci.Bndl{}
+			bndl.Spec.Spec.Root.Path = "/path/to/mordor"
+			Expect(bndl.GetRootfsPath()).To(Equal("/path/to/mordor"))
+		})
+	})
+
 	Describe("NamespaceSlice", func() {
 		Context("when the namespace isnt already in the slice", func() {
 			It("adds the namespace", func() {

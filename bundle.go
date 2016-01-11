@@ -92,6 +92,11 @@ func (b Bndl) WithMounts(mounts ...Mount) *Bndl {
 	return &b
 }
 
+// GetRootfsPath returns the path to the rootfs of this bundle. Nothing is modified
+func (b Bndl) GetRootfsPath() string {
+	return b.Spec.Spec.Root.Path
+}
+
 type NamespaceSlice []specs.Namespace
 
 func (slice NamespaceSlice) Set(ns specs.Namespace) NamespaceSlice {
