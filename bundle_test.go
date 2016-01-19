@@ -51,6 +51,20 @@ var _ = Describe("Bundle", func() {
 		})
 	})
 
+	Describe("WithPrestartHooks", func() {
+		It("adds the hook to the runtime spec", func() {
+			returnedBundle := initialBundle.WithPrestartHooks(specs.Hook{
+				Path: "foo",
+				Args: []string{"bar", "baz"},
+			})
+
+			Expect(returnedBundle.RuntimeSpec.Hooks.Prestart).To(Equal([]specs.Hook{{
+				Path: "foo",
+				Args: []string{"bar", "baz"},
+			}}))
+		})
+	})
+
 	Describe("WithMounts", func() {
 		BeforeEach(func() {
 			returnedBundle = initialBundle.WithMounts(
@@ -158,6 +172,46 @@ var _ = Describe("Bundle", func() {
 				overridenBundle := returnedBundle.WithNamespaces(specs.Namespace{Type: "mynamespace"})
 				Expect(overridenBundle.RuntimeSpec.Linux.Namespaces).To(ConsistOf(specs.Namespace{Type: "mynamespace"}))
 			})
+		})
+	})
+
+	Describe("WithUIDMappings", func() {
+		It("returns a bundle with the provided uid mappings added to the runtime spec", func() {
+			uidMappings := []specs.IDMapping{
+				{
+					HostID:      40000,
+					ContainerID: 0,
+					Size:        1,
+				},
+				{
+					HostID:      1,
+					ContainerID: 1,
+					Size:        39999,
+				},
+			}
+			returnedBundle := initialBundle.WithUIDMappings(uidMappings...)
+
+			Expect(returnedBundle.RuntimeSpec.Linux.UIDMappings).To(Equal(uidMappings))
+		})
+	})
+
+	Describe("WithGIDMappings", func() {
+		It("returns a bundle with the provided gid mappings added to the runtime spec", func() {
+			gidMappings := []specs.IDMapping{
+				{
+					HostID:      40000,
+					ContainerID: 0,
+					Size:        1,
+				},
+				{
+					HostID:      1,
+					ContainerID: 1,
+					Size:        39999,
+				},
+			}
+			returnedBundle := initialBundle.WithGIDMappings(gidMappings...)
+
+			Expect(returnedBundle.RuntimeSpec.Linux.GIDMappings).To(Equal(gidMappings))
 		})
 	})
 

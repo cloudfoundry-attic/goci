@@ -55,6 +55,21 @@ func (b Bndl) WithNamespace(ns specs.Namespace) *Bndl {
 	return &b
 }
 
+func (b Bndl) WithUIDMappings(mappings ...specs.IDMapping) *Bndl {
+	b.RuntimeSpec.Linux.UIDMappings = mappings
+	return &b
+}
+
+func (b Bndl) WithGIDMappings(mappings ...specs.IDMapping) *Bndl {
+	b.RuntimeSpec.Linux.GIDMappings = mappings
+	return &b
+}
+
+func (b Bndl) WithPrestartHooks(hook ...specs.Hook) *Bndl {
+	b.RuntimeSpec.Hooks.Prestart = hook
+	return &b
+}
+
 // WithNamespaces returns a bundle with the given namespaces. The original bundle is not modified, but the original
 // set of namespaces is replaced in the returned bundle.
 func (b Bndl) WithNamespaces(namespaces ...specs.Namespace) *Bndl {
