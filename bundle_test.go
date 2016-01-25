@@ -65,6 +65,20 @@ var _ = Describe("Bundle", func() {
 		})
 	})
 
+	Describe("WithPoststopHooks", func() {
+		It("adds the hook to the runtime spec", func() {
+			returnedBundle := initialBundle.WithPoststopHooks(specs.Hook{
+				Path: "foo",
+				Args: []string{"bar", "baz"},
+			})
+
+			Expect(returnedBundle.RuntimeSpec.Hooks.Poststop).To(Equal([]specs.Hook{{
+				Path: "foo",
+				Args: []string{"bar", "baz"},
+			}}))
+		})
+	})
+
 	Describe("WithMounts", func() {
 		BeforeEach(func() {
 			returnedBundle = initialBundle.WithMounts(
