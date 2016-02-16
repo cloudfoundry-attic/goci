@@ -8,9 +8,9 @@ import (
 	"path"
 
 	"github.com/cloudfoundry-incubator/goci"
-	"github.com/cloudfoundry-incubator/goci/specs"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opencontainers/specs"
 )
 
 var _ = Describe("Saving", func() {
@@ -26,12 +26,12 @@ var _ = Describe("Saving", func() {
 
 		bndle = &goci.Bndl{
 			Spec: specs.LinuxSpec{
-				Spec: specs.Spec{Version: "abcd"},
-			},
-			RuntimeSpec: specs.LinuxRuntimeSpec{
-				RuntimeSpec: specs.RuntimeSpec{
-					Mounts: map[string]specs.Mount{
-						"foo": specs.Mount{},
+				Spec: specs.Spec{
+					Version: "abcd",
+					Mounts: []specs.Mount{
+						specs.Mount{
+							Destination: "potato",
+						},
 					},
 				},
 			},
@@ -48,21 +48,13 @@ var _ = Describe("Saving", func() {
 		var configJson map[string]interface{}
 		Expect(json.NewDecoder(mustOpen(path.Join(tmp, "config.json"))).Decode(&configJson)).To(Succeed())
 
-		Expect(configJson).To(HaveKeyWithValue("version", Equal("abcd")))
-	})
-
-	It("serializes the runtime spec to runtime.json", func() {
-		Expect(path.Join(tmp, "runtime.json")).To(BeAnExistingFile())
-
-		var runtimeJson map[string]interface{}
-		Expect(json.NewDecoder(mustOpen(path.Join(tmp, "runtime.json"))).Decode(&runtimeJson)).To(Succeed())
-
-		Expect(runtimeJson).To(HaveKeyWithValue("mounts", HaveKey("foo")))
+		Expect(configJson).To(HaveKeyWithValue("ociVersion", Equal("abcd")))
+		Expect(configJson).To(HaveKey("mounts"))
 	})
 
 	Describe("Load", func() {
-		Context("when config.json and runtime.json exist", func() {
-			It("loads the bundle from runtime.json and config.json", func() {
+		Context("when config.json exist", func() {
+			It("loads the bundle from config.json", func() {
 				bundleLoader := &goci.BndlLoader{}
 				loadedBundle, _ := bundleLoader.Load(tmp)
 				Expect(loadedBundle).To(Equal(bndle))
@@ -72,15 +64,6 @@ var _ = Describe("Saving", func() {
 		Context("when config.json does not exist", func() {
 			It("returns an error", func() {
 				Expect(os.Remove(path.Join(tmp, "config.json"))).To(Succeed())
-				bundleLoader := &goci.BndlLoader{}
-				_, err := bundleLoader.Load(tmp)
-				Expect(err).To(HaveOccurred())
-			})
-		})
-
-		Context("when runtime.json does not exist", func() {
-			It("returns an error", func() {
-				Expect(os.Remove(path.Join(tmp, "runtime.json"))).To(Succeed())
 				bundleLoader := &goci.BndlLoader{}
 				_, err := bundleLoader.Load(tmp)
 				Expect(err).To(HaveOccurred())

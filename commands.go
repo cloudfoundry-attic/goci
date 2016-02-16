@@ -25,7 +25,7 @@ func KillCommand(id, signal string) *exec.Cmd {
 
 // StartCommand returns an *exec.Cmd that, when run, will execute a given bundle.
 func (runc RuncBinary) StartCommand(path, id string) *exec.Cmd {
-	cmd := exec.Command(string(runc), "--id", id, "start")
+	cmd := exec.Command(string(runc), "start", id)
 	cmd.Dir = path
 	return cmd
 }
@@ -34,7 +34,7 @@ func (runc RuncBinary) StartCommand(path, id string) *exec.Cmd {
 // in a running container.
 func (runc RuncBinary) ExecCommand(id, processJSONPath string) *exec.Cmd {
 	return exec.Command(
-		string(runc), "--id", id, "exec", processJSONPath,
+		string(runc), "exec", id, "-p", processJSONPath,
 	)
 }
 
@@ -42,6 +42,6 @@ func (runc RuncBinary) ExecCommand(id, processJSONPath string) *exec.Cmd {
 // container.
 func (runc RuncBinary) KillCommand(id, signal string) *exec.Cmd {
 	return exec.Command(
-		string(runc), "--id", id, "kill", signal,
+		string(runc), "kill", id, signal,
 	)
 }

@@ -2,9 +2,9 @@ package goci_test
 
 import (
 	"github.com/cloudfoundry-incubator/goci"
-	"github.com/cloudfoundry-incubator/goci/specs"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opencontainers/specs"
 )
 
 var _ = Describe("Bundle", func() {
@@ -22,8 +22,8 @@ var _ = Describe("Bundle", func() {
 	Describe("WithCapabilities", func() {
 		It("adds capabilities to the bundle", func() {
 			returnedBundle := initialBundle.WithCapabilities("growtulips", "waterspuds")
-			Expect(returnedBundle.Spec.Linux.Capabilities).To(ContainElement("growtulips"))
-			Expect(returnedBundle.Spec.Linux.Capabilities).To(ContainElement("waterspuds"))
+			Expect(returnedBundle.Capabilities()).To(ContainElement("growtulips"))
+			Expect(returnedBundle.Capabilities()).To(ContainElement("waterspuds"))
 		})
 
 		It("does not modify the initial bundle", func() {
@@ -35,7 +35,12 @@ var _ = Describe("Bundle", func() {
 	Describe("WithProcess", func() {
 		It("adds the process to the bundle", func() {
 			returnedBundle := initialBundle.WithProcess(goci.Process("echo", "foo"))
-			Expect(returnedBundle.Spec.Process).To(Equal(specs.Process{Args: []string{"echo", "foo"}}))
+			Expect(returnedBundle.Process()).To(Equal(specs.Process{Args: []string{"echo", "foo"}}))
+		})
+
+		It("sets the CWD to / by default", func() {
+			returnedBundle := initialBundle.WithProcess(goci.Process("echo", "foo"))
+			Expect(returnedBundle.Process()).To(Equal(specs.Process{Args: []string{"echo", "foo"}}))
 		})
 
 		It("does not modify the initial bundle", func() {
@@ -47,7 +52,7 @@ var _ = Describe("Bundle", func() {
 	Describe("WithRootFS", func() {
 		It("sets the rootfs path in the spec", func() {
 			returnedBundle := initialBundle.WithRootFS("/foo/bar/baz")
-			Expect(returnedBundle.Spec.Root.Path).To(Equal("/foo/bar/baz"))
+			Expect(returnedBundle.RootFS()).To(Equal("/foo/bar/baz"))
 		})
 	})
 
@@ -58,7 +63,7 @@ var _ = Describe("Bundle", func() {
 				Args: []string{"bar", "baz"},
 			})
 
-			Expect(returnedBundle.RuntimeSpec.Hooks.Prestart).To(Equal([]specs.Hook{{
+			Expect(returnedBundle.PrestartHooks()).To(Equal([]specs.Hook{{
 				Path: "foo",
 				Args: []string{"bar", "baz"},
 			}}))
@@ -72,7 +77,7 @@ var _ = Describe("Bundle", func() {
 				Args: []string{"bar", "baz"},
 			})
 
-			Expect(returnedBundle.RuntimeSpec.Hooks.Poststop).To(Equal([]specs.Hook{{
+			Expect(returnedBundle.PoststopHooks()).To(Equal([]specs.Hook{{
 				Path: "foo",
 				Args: []string{"bar", "baz"},
 			}}))
@@ -82,8 +87,7 @@ var _ = Describe("Bundle", func() {
 	Describe("WithMounts", func() {
 		BeforeEach(func() {
 			returnedBundle = initialBundle.WithMounts(
-				goci.Mount{
-					Name:        "apple",
+				specs.Mount{
 					Type:        "apple_fs",
 					Source:      "iDevice",
 					Destination: "/apple",
@@ -92,8 +96,7 @@ var _ = Describe("Bundle", func() {
 						"shiny",
 					},
 				},
-				goci.Mount{
-					Name:        "banana",
+				specs.Mount{
 					Type:        "banana_fs",
 					Source:      "banana_device",
 					Destination: "/banana",
@@ -105,42 +108,44 @@ var _ = Describe("Bundle", func() {
 		})
 
 		It("returns a bundle with the mounts added to the spec", func() {
-			Expect(returnedBundle.Spec.Mounts).To(ContainElement(specs.MountPoint{Name: "banana", Path: "/banana"}))
-			Expect(returnedBundle.Spec.Mounts).To(ContainElement(specs.MountPoint{Name: "apple", Path: "/apple"}))
-		})
+			Expect(returnedBundle.Mounts()).To(ContainElement(
+				specs.Mount{
+					Destination: "/banana",
+					Type:        "banana_fs",
+					Source:      "banana_device",
+					Options:     []string{"yellow", "fresh"},
+				},
+			))
 
-		It("returns a bundle with the mounts mapped in the runtime spec", func() {
-			Expect(returnedBundle.RuntimeSpec.Mounts).To(HaveKeyWithValue("banana", specs.Mount{
-				Type:    "banana_fs",
-				Source:  "banana_device",
-				Options: []string{"yellow", "fresh"},
-			}))
-
-			Expect(returnedBundle.RuntimeSpec.Mounts).To(HaveKeyWithValue("apple", specs.Mount{
-				Type:    "apple_fs",
-				Source:  "iDevice",
-				Options: []string{"healthy", "shiny"},
-			}))
+			Expect(returnedBundle.Mounts()).To(ContainElement(
+				specs.Mount{
+					Destination: "/apple",
+					Type:        "apple_fs",
+					Source:      "iDevice",
+					Options:     []string{"healthy", "shiny"},
+				}))
 		})
 
 		It("does not modify the original bundle", func() {
 			Expect(returnedBundle).NotTo(Equal(initialBundle))
-			Expect(initialBundle.Spec.Mounts).To(HaveLen(0))
+			Expect(initialBundle.Mounts()).To(HaveLen(0))
 		})
 	})
 
 	Describe("WithResources", func() {
+		var t = true
+
 		BeforeEach(func() {
-			returnedBundle = initialBundle.WithResources(&specs.Resources{DisableOOMKiller: true})
+			returnedBundle = initialBundle.WithResources(&specs.Resources{DisableOOMKiller: &t})
 		})
 
 		It("returns a bundle with the resources added to the runtime spec", func() {
-			Expect(returnedBundle.RuntimeSpec.Linux.Resources).To(Equal(&specs.Resources{DisableOOMKiller: true}))
+			Expect(returnedBundle.Resources()).To(Equal(&specs.Resources{DisableOOMKiller: &t}))
 		})
 
 		It("does not modify the original bundle", func() {
 			Expect(returnedBundle).NotTo(Equal(initialBundle))
-			Expect(initialBundle.RuntimeSpec.Linux.Resources).To(BeNil())
+			Expect(initialBundle.Resources()).To(BeNil())
 		})
 	})
 
@@ -151,14 +156,14 @@ var _ = Describe("Bundle", func() {
 
 			initialBundle = initialBundle.WithNamespace(colin)
 			returnedBundle = initialBundle.WithNamespace(potato)
-			Expect(returnedBundle.RuntimeSpec.Linux.Namespaces).To(ConsistOf(colin, potato))
+			Expect(returnedBundle.Namespaces()).To(ConsistOf(colin, potato))
 		})
 
 		Context("when the namespace isnt already in the spec", func() {
 			It("adds the namespace", func() {
 				ns := specs.Namespace{Type: "potato", Path: "pan"}
 				returnedBundle = initialBundle.WithNamespace(ns)
-				Expect(returnedBundle.RuntimeSpec.Linux.Namespaces).To(ConsistOf(ns))
+				Expect(returnedBundle.Namespaces()).To(ConsistOf(ns))
 			})
 		})
 
@@ -167,7 +172,7 @@ var _ = Describe("Bundle", func() {
 				initialBundle = initialBundle.WithNamespace(specs.Namespace{Type: "potato", Path: "should-be-overridden"})
 				ns := specs.Namespace{Type: "potato", Path: "pan"}
 				returnedBundle = initialBundle.WithNamespace(ns)
-				Expect(returnedBundle.RuntimeSpec.Linux.Namespaces).To(ConsistOf(ns))
+				Expect(returnedBundle.Namespaces()).To(ConsistOf(ns))
 			})
 		})
 	})
@@ -178,13 +183,13 @@ var _ = Describe("Bundle", func() {
 		})
 
 		It("returns a bundle with the namespaces added to the runtime spec", func() {
-			Expect(returnedBundle.RuntimeSpec.Linux.Namespaces).To(ConsistOf(specs.Namespace{Type: specs.NetworkNamespace}))
+			Expect(returnedBundle.Namespaces()).To(ConsistOf(specs.Namespace{Type: specs.NetworkNamespace}))
 		})
 
 		Context("when the spec already contains namespaces", func() {
 			It("replaces them", func() {
 				overridenBundle := returnedBundle.WithNamespaces(specs.Namespace{Type: "mynamespace"})
-				Expect(overridenBundle.RuntimeSpec.Linux.Namespaces).To(ConsistOf(specs.Namespace{Type: "mynamespace"}))
+				Expect(overridenBundle.Namespaces()).To(ConsistOf(specs.Namespace{Type: "mynamespace"}))
 			})
 		})
 	})
@@ -205,7 +210,7 @@ var _ = Describe("Bundle", func() {
 			}
 			returnedBundle := initialBundle.WithUIDMappings(uidMappings...)
 
-			Expect(returnedBundle.RuntimeSpec.Linux.UIDMappings).To(Equal(uidMappings))
+			Expect(returnedBundle.UIDMappings()).To(Equal(uidMappings))
 		})
 	})
 
@@ -225,7 +230,7 @@ var _ = Describe("Bundle", func() {
 			}
 			returnedBundle := initialBundle.WithGIDMappings(gidMappings...)
 
-			Expect(returnedBundle.RuntimeSpec.Linux.GIDMappings).To(Equal(gidMappings))
+			Expect(returnedBundle.GIDMappings()).To(Equal(gidMappings))
 		})
 	})
 
@@ -235,22 +240,14 @@ var _ = Describe("Bundle", func() {
 		})
 
 		It("returns a bundle with the namespaces added to the runtime spec", func() {
-			Expect(returnedBundle.RuntimeSpec.Linux.Devices).To(ConsistOf(specs.Device{Path: "test/path"}))
+			Expect(returnedBundle.Spec.Linux.Devices).To(ConsistOf(specs.Device{Path: "test/path"}))
 		})
 
 		Context("when the spec already contains namespaces", func() {
 			It("replaces them", func() {
 				overridenBundle := returnedBundle.WithDevices(specs.Device{Path: "new-device"})
-				Expect(overridenBundle.RuntimeSpec.Linux.Devices).To(ConsistOf(specs.Device{Path: "new-device"}))
+				Expect(overridenBundle.Devices()).To(ConsistOf(specs.Device{Path: "new-device"}))
 			})
-		})
-	})
-
-	Describe("GetRootfsPath", func() {
-		It("returns the rootfs path", func() {
-			bndl := &goci.Bndl{}
-			bndl.Spec.Spec.Root.Path = "/path/to/mordor"
-			Expect(bndl.GetRootfsPath()).To(Equal("/path/to/mordor"))
 		})
 	})
 

@@ -12,12 +12,7 @@ type BndlLoader struct {
 
 func (b *BndlLoader) Load(path string) (*Bndl, error) {
 	bundle := Bndl{}
-
-	err := readJsonInto(filepath.Join(path, "runtime.json"), &bundle.RuntimeSpec)
-	if err != nil {
-		return nil, err
-	}
-	err = readJsonInto(filepath.Join(path, "config.json"), &bundle.Spec)
+	err := readJsonInto(filepath.Join(path, "config.json"), &bundle.Spec)
 	if err != nil {
 		return nil, err
 	}
@@ -26,11 +21,7 @@ func (b *BndlLoader) Load(path string) (*Bndl, error) {
 }
 
 func (b *Bndl) Save(path string) error {
-	if err := save(b.Spec, filepath.Join(path, "config.json")); err != nil {
-		return err
-	}
-
-	return save(b.RuntimeSpec, filepath.Join(path, "runtime.json"))
+	return save(b.Spec, filepath.Join(path, "config.json"))
 }
 
 func save(value interface{}, path string) error {
