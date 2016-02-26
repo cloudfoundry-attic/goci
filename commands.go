@@ -14,8 +14,8 @@ func StartCommand(path, id string) *exec.Cmd {
 }
 
 // ExecCommand creates an exec command using the default runc binary name.
-func ExecCommand(id, processJSONPath string) *exec.Cmd {
-	return DefaultRuncBinary.ExecCommand(id, processJSONPath)
+func ExecCommand(id, processJSONPath, pidFilePath string) *exec.Cmd {
+	return DefaultRuncBinary.ExecCommand(id, processJSONPath, pidFilePath)
 }
 
 // KillCommand creates a kill command using the default runc binary name.
@@ -32,9 +32,9 @@ func (runc RuncBinary) StartCommand(path, id string) *exec.Cmd {
 
 // ExecCommand returns an *exec.Cmd that, when run, will execute a process spec
 // in a running container.
-func (runc RuncBinary) ExecCommand(id, processJSONPath string) *exec.Cmd {
+func (runc RuncBinary) ExecCommand(id, processJSONPath, pidFilePath string) *exec.Cmd {
 	return exec.Command(
-		string(runc), "exec", id, "-p", processJSONPath,
+		string(runc), "exec", id, "--pid-file", pidFilePath, "-p", processJSONPath,
 	)
 }
 
