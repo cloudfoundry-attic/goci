@@ -23,6 +23,10 @@ func KillCommand(id, signal string) *exec.Cmd {
 	return DefaultRuncBinary.KillCommand(id, signal)
 }
 
+func EventsCommand(id string) *exec.Cmd {
+	return DefaultRuncBinary.EventsCommand(id)
+}
+
 // StartCommand returns an *exec.Cmd that, when run, will execute a given bundle.
 func (runc RuncBinary) StartCommand(path, id string) *exec.Cmd {
 	cmd := exec.Command(string(runc), "start", id)
@@ -35,6 +39,13 @@ func (runc RuncBinary) StartCommand(path, id string) *exec.Cmd {
 func (runc RuncBinary) ExecCommand(id, processJSONPath, pidFilePath string) *exec.Cmd {
 	return exec.Command(
 		string(runc), "exec", id, "--pid-file", pidFilePath, "-p", processJSONPath,
+	)
+}
+
+// EventsCommand returns an *exec.Cmd that, when run, will retrieve events for the container
+func (runc RuncBinary) EventsCommand(id string) *exec.Cmd {
+	return exec.Command(
+		string(runc), "events", id,
 	)
 }
 

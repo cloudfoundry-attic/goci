@@ -26,6 +26,13 @@ var _ = Describe("Commands", func() {
 		})
 	})
 
+	Describe("EventsCommand", func() {
+		It("creates an *exec.Cmd to get events for a bundle", func() {
+			cmd := goci.EventsCommand("my-bundle-id")
+			Expect(cmd.Args).To(Equal([]string{"funC", "events", "my-bundle-id"}))
+		})
+	})
+
 	Describe("KillCommand", func() {
 		It("creates an *exec.Cmd to signal the bundle", func() {
 			cmd := goci.KillCommand("my-bundle-id", "TERM")
