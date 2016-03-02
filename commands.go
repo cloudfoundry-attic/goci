@@ -9,8 +9,8 @@ var DefaultRuncBinary = RuncBinary("runc")
 type RuncBinary string
 
 // StartCommand creates a start command using the default runc binary name.
-func StartCommand(path, id string) *exec.Cmd {
-	return DefaultRuncBinary.StartCommand(path, id)
+func StartCommand(path, id string, detach bool) *exec.Cmd {
+	return DefaultRuncBinary.StartCommand(path, id, detach)
 }
 
 // ExecCommand creates an exec command using the default runc binary name.
@@ -28,8 +28,13 @@ func EventsCommand(id string) *exec.Cmd {
 }
 
 // StartCommand returns an *exec.Cmd that, when run, will execute a given bundle.
-func (runc RuncBinary) StartCommand(path, id string) *exec.Cmd {
-	cmd := exec.Command(string(runc), "start", id)
+func (runc RuncBinary) StartCommand(path, id string, detach bool) *exec.Cmd {
+	args := []string{"start", id}
+	if detach {
+		args = append(args, "-d")
+	}
+
+	cmd := exec.Command(string(runc), args...)
 	cmd.Dir = path
 	return cmd
 }
