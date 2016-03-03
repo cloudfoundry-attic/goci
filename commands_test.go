@@ -44,4 +44,11 @@ var _ = Describe("Commands", func() {
 			Expect(cmd.Args).To(Equal([]string{"funC", "kill", "my-bundle-id", "TERM"}))
 		})
 	})
+
+	Describe("DeleteCommand", func() {
+		It("creates an *exec.Cmd to delete the bundle", func() {
+			cmd := goci.DeleteCommand("my-bundle-id")
+			Expect(cmd.Args).To(Equal([]string{"funC", "delete", "my-bundle-id"}))
+		})
+	})
 })

@@ -23,6 +23,11 @@ func KillCommand(id, signal string) *exec.Cmd {
 	return DefaultRuncBinary.KillCommand(id, signal)
 }
 
+// DeleteCommand creates deletes a container using the default runc binary name.
+func DeleteCommand(id string) *exec.Cmd {
+	return DefaultRuncBinary.DeleteCommand(id)
+}
+
 func EventsCommand(id string) *exec.Cmd {
 	return DefaultRuncBinary.EventsCommand(id)
 }
@@ -31,7 +36,7 @@ func EventsCommand(id string) *exec.Cmd {
 func (runc RuncBinary) StartCommand(path, id string, detach bool) *exec.Cmd {
 	args := []string{"start", id}
 	if detach {
-		args = append(args, "-d")
+		args = []string{"start", "-d", id}
 	}
 
 	cmd := exec.Command(string(runc), args...)
@@ -60,4 +65,10 @@ func (runc RuncBinary) KillCommand(id, signal string) *exec.Cmd {
 	return exec.Command(
 		string(runc), "kill", id, signal,
 	)
+}
+
+// DeleteCommand returns an *exec.Cmd that, when run, will signal the running
+// container.
+func (runc RuncBinary) DeleteCommand(id string) *exec.Cmd {
+	return exec.Command(string(runc), "delete", id)
 }
