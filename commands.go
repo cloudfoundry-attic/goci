@@ -23,7 +23,12 @@ func KillCommand(id, signal string) *exec.Cmd {
 	return DefaultRuncBinary.KillCommand(id, signal)
 }
 
-// DeleteCommand creates deletes a container using the default runc binary name.
+// StateCommands creates a command that gets the state of a container using the default runc binary name.
+func StateCommand(id string) *exec.Cmd {
+	return DefaultRuncBinary.StateCommand(id)
+}
+
+// DeleteCommand creates a command that deletes a container using the default runc binary name.
 func DeleteCommand(id string) *exec.Cmd {
 	return DefaultRuncBinary.DeleteCommand(id)
 }
@@ -65,6 +70,12 @@ func (runc RuncBinary) KillCommand(id, signal string) *exec.Cmd {
 	return exec.Command(
 		string(runc), "kill", id, signal,
 	)
+}
+
+// StateCommand returns an *exec.Cmd that, when run, will get the state of the
+// container.
+func (runc RuncBinary) StateCommand(id string) *exec.Cmd {
+	return exec.Command(string(runc), "state", id)
 }
 
 // DeleteCommand returns an *exec.Cmd that, when run, will signal the running

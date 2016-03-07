@@ -1,8 +1,6 @@
 package goci
 
-import (
-	"github.com/opencontainers/specs"
-)
+import "github.com/opencontainers/specs"
 
 // Bndl represents an in-memory OCI bundle
 type Bndl struct {
@@ -138,12 +136,12 @@ func (b Bndl) Devices() []specs.Device {
 
 // WithCapabilities returns a bundle with the given capabilities added. The original bundle is not modified.
 func (b Bndl) WithCapabilities(capabilities ...string) *Bndl {
-	b.Spec.Linux.Capabilities = capabilities
+	b.Spec.Process.Capabilities = capabilities
 	return &b
 }
 
 func (b Bndl) Capabilities() []string {
-	return b.Spec.Linux.Capabilities
+	return b.Spec.Process.Capabilities
 }
 
 // WithMounts returns a bundle with the given mounts added. The original bundle is not modified.
