@@ -57,6 +57,18 @@ func (b Bndl) Resources() *specs.Resources {
 	return b.Spec.Linux.Resources
 }
 
+func (b Bndl) WithCPUShares(shares specs.CPU) *Bndl {
+	resources := b.Resources()
+	if resources == nil {
+		resources = &specs.Resources{}
+	}
+
+	resources.CPU = &shares
+	b.Spec.Linux.Resources = resources
+
+	return &b
+}
+
 func (b Bndl) WithMemoryLimit(limit specs.Memory) *Bndl {
 	resources := b.Resources()
 	if resources == nil {

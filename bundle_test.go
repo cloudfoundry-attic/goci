@@ -149,6 +149,18 @@ var _ = Describe("Bundle", func() {
 		})
 	})
 
+	Describe("WithCPUShares", func() {
+		var shares uint64 = 10
+
+		BeforeEach(func() {
+			returnedBundle = initialBundle.WithCPUShares(specs.CPU{Shares: &shares})
+		})
+
+		It("returns a bundle with the cpu shares added to the runtime spec", func() {
+			Expect(returnedBundle.Resources().CPU).To(Equal(&specs.CPU{Shares: &shares}))
+		})
+	})
+
 	Describe("WithNamespace", func() {
 		It("does not change any namespaces other than the one with the given type", func() {
 			colin := specs.Namespace{Type: "colin", Path: ""}
