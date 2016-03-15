@@ -86,7 +86,7 @@ func (runc RuncBinary) StateCommand(id string) *exec.Cmd {
 // StatsCommand returns an *exec.Cmd that, when run, will get the stats of the
 // container.
 func (runc RuncBinary) StatsCommand(id string) *exec.Cmd {
-	return exec.Command(string(runc), "events", "--stats", id)
+	return exec.Command(string(runc), "events", "--stats", id, "--interval", "1000s")
 }
 
 // DeleteCommand returns an *exec.Cmd that, when run, will signal the running
