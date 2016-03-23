@@ -1,19 +1,17 @@
 package goci
 
-import "github.com/opencontainers/specs"
+import "github.com/opencontainers/specs/specs-go"
 
 // Bndl represents an in-memory OCI bundle
 type Bndl struct {
-	Spec specs.LinuxSpec
+	Spec specs.Spec
 }
 
 // Bundle creates a Bndl
 func Bundle() *Bndl {
 	return &Bndl{
-		Spec: specs.LinuxSpec{
-			Spec: specs.Spec{
-				Version: "0.2.0",
-			},
+		Spec: specs.Spec{
+			Version: "0.2.0",
 		},
 	}
 }

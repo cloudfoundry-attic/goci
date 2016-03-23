@@ -10,7 +10,7 @@ import (
 	"github.com/cloudfoundry-incubator/goci"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opencontainers/specs"
+	"github.com/opencontainers/specs/specs-go"
 )
 
 var _ = Describe("Saving", func() {
@@ -25,13 +25,11 @@ var _ = Describe("Saving", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		bndle = &goci.Bndl{
-			Spec: specs.LinuxSpec{
-				Spec: specs.Spec{
-					Version: "abcd",
-					Mounts: []specs.Mount{
-						specs.Mount{
-							Destination: "potato",
-						},
+			Spec: specs.Spec{
+				Version: "abcd",
+				Mounts: []specs.Mount{
+					specs.Mount{
+						Destination: "potato",
 					},
 				},
 			},

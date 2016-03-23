@@ -13,13 +13,18 @@ var _ = Describe("Commands", func() {
 
 	Describe("StartCommand", func() {
 		It("creates an *exec.Cmd to start a bundle", func() {
-			cmd := goci.StartCommand("my-bundle-path", "my-bundle-id", false)
-			Expect(cmd.Args).To(Equal([]string{"funC", "start", "my-bundle-id"}))
+			cmd := goci.StartCommand("my-bundle-path", "my-bundle-id", false, "mylog.file")
+			Expect(cmd.Args).To(Equal([]string{"funC", "--debug", "--log", "mylog.file", "start", "my-bundle-id"}))
 			Expect(cmd.Dir).To(Equal("my-bundle-path"))
 		})
 
+		It("turns on debug logging", func() {
+			cmd := goci.StartCommand("my-bundle-path", "my-bundle-id", true, "mylog.file")
+			Expect(cmd.Args).To(ContainElement("--debug"))
+		})
+
 		It("passes the detach flag if requested", func() {
-			cmd := goci.StartCommand("my-bundle-path", "my-bundle-id", true)
+			cmd := goci.StartCommand("my-bundle-path", "my-bundle-id", true, "mylog.file")
 			Expect(cmd.Args).To(ContainElement("-d"))
 		})
 	})
