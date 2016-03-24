@@ -28,6 +28,10 @@ type Runc interface {
 	EventsCommand(id string) *exec.Cmd
 }
 
+type RuncCmd interface {
+	WithLogFile(file string) *exec.Cmd
+}
+
 // WithLogFile returns a runc binary whose methods all log to the given log file
 func (runc RuncBinary) WithLogFile(file string) Runc {
 	return RuncBinary{
@@ -92,14 +96,14 @@ func (runc RuncBinary) StartCommand(path, id string, detach bool) *exec.Cmd {
 // in a running container.
 func (runc RuncBinary) ExecCommand(id, processJSONPath, pidFilePath string) *exec.Cmd {
 	return exec.Command(
-		runc.RuncBinary, "exec", id, "--pid-file", pidFilePath, "-p", processJSONPath,
+		runc.RuncBinary, "--debug", "--log", runc.logFile, "exec", id, "--pid-file", pidFilePath, "-p", processJSONPath,
 	)
 }
 
 // EventsCommand returns an *exec.Cmd that, when run, will retrieve events for the container
 func (runc RuncBinary) EventsCommand(id string) *exec.Cmd {
 	return exec.Command(
-		runc.RuncBinary, "events", id,
+		runc.RuncBinary, "--debug", "--log", runc.logFile, "events", id,
 	)
 }
 
@@ -107,24 +111,24 @@ func (runc RuncBinary) EventsCommand(id string) *exec.Cmd {
 // container.
 func (runc RuncBinary) KillCommand(id, signal string) *exec.Cmd {
 	return exec.Command(
-		runc.RuncBinary, "kill", id, signal,
+		runc.RuncBinary, "--debug", "--log", runc.logFile, "kill", id, signal,
 	)
 }
 
 // StateCommand returns an *exec.Cmd that, when run, will get the state of the
 // container.
 func (runc RuncBinary) StateCommand(id string) *exec.Cmd {
-	return exec.Command(runc.RuncBinary, "state", id)
+	return exec.Command(runc.RuncBinary, "--debug", "--log", runc.logFile, "state", id)
 }
 
 // StatsCommand returns an *exec.Cmd that, when run, will get the stats of the
 // container.
 func (runc RuncBinary) StatsCommand(id string) *exec.Cmd {
-	return exec.Command(runc.RuncBinary, "events", "--stats", id)
+	return exec.Command(runc.RuncBinary, "--debug", "--log", runc.logFile, "events", "--stats", id)
 }
 
 // DeleteCommand returns an *exec.Cmd that, when run, will signal the running
 // container.
 func (runc RuncBinary) DeleteCommand(id string) *exec.Cmd {
-	return exec.Command(runc.RuncBinary, "delete", id)
+	return exec.Command(runc.RuncBinary, "--debug", "--log", runc.logFile, "delete", id)
 }
