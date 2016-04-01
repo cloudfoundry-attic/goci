@@ -19,18 +19,18 @@ func ExecCommand(id, processJSONPath, pidFilePath string) *exec.Cmd {
 }
 
 // KillCommand creates a kill command using the default runc binary name.
-func KillCommand(id, signal string) *exec.Cmd {
-	return DefaultRuncBinary.KillCommand(id, signal)
+func KillCommand(id, signal, logFile string) *exec.Cmd {
+	return DefaultRuncBinary.KillCommand(id, signal, logFile)
 }
 
 // StateCommands creates a command that gets the state of a container using the default runc binary name.
-func StateCommand(id string) *exec.Cmd {
-	return DefaultRuncBinary.StateCommand(id)
+func StateCommand(id, logFile string) *exec.Cmd {
+	return DefaultRuncBinary.StateCommand(id, logFile)
 }
 
 // StatsCommands creates a command that gets the stats of a container using the default runc binary name.
-func StatsCommand(id string) *exec.Cmd {
-	return DefaultRuncBinary.StatsCommand(id)
+func StatsCommand(id, logFile string) *exec.Cmd {
+	return DefaultRuncBinary.StatsCommand(id, logFile)
 }
 
 // DeleteCommand creates a command that deletes a container using the default runc binary name.
@@ -73,22 +73,22 @@ func (runc RuncBinary) EventsCommand(id string) *exec.Cmd {
 
 // KillCommand returns an *exec.Cmd that, when run, will signal the running
 // container.
-func (runc RuncBinary) KillCommand(id, signal string) *exec.Cmd {
+func (runc RuncBinary) KillCommand(id, signal, logFile string) *exec.Cmd {
 	return exec.Command(
-		string(runc), "kill", id, signal,
+		string(runc), "--log", logFile, "kill", id, signal,
 	)
 }
 
 // StateCommand returns an *exec.Cmd that, when run, will get the state of the
 // container.
-func (runc RuncBinary) StateCommand(id string) *exec.Cmd {
-	return exec.Command(string(runc), "state", id)
+func (runc RuncBinary) StateCommand(id, logFile string) *exec.Cmd {
+	return exec.Command(string(runc), "--log", logFile, "state", id)
 }
 
 // StatsCommand returns an *exec.Cmd that, when run, will get the stats of the
 // container.
-func (runc RuncBinary) StatsCommand(id string) *exec.Cmd {
-	return exec.Command(string(runc), "events", "--stats", id)
+func (runc RuncBinary) StatsCommand(id, logFile string) *exec.Cmd {
+	return exec.Command(string(runc), "--log", logFile, "events", "--stats", id)
 }
 
 // DeleteCommand returns an *exec.Cmd that, when run, will signal the running
