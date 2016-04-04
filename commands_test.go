@@ -46,28 +46,28 @@ var _ = Describe("Commands", func() {
 	Describe("KillCommand", func() {
 		It("creates an *exec.Cmd to signal the bundle", func() {
 			cmd := goci.KillCommand("my-bundle-id", "TERM", "log.file")
-			Expect(cmd.Args).To(Equal([]string{"funC", "--log", "log.file", "kill", "my-bundle-id", "TERM"}))
+			Expect(cmd.Args).To(Equal([]string{"funC", "--debug", "--log", "log.file", "kill", "my-bundle-id", "TERM"}))
 		})
 	})
 
 	Describe("StateCommand", func() {
 		It("creates an *exec.Cmd to get the state of the bundle", func() {
 			cmd := goci.StateCommand("my-bundle-id", "log.file")
-			Expect(cmd.Args).To(Equal([]string{"funC", "--log", "log.file", "state", "my-bundle-id"}))
+			Expect(cmd.Args).To(Equal([]string{"funC", "--debug", "--log", "log.file", "state", "my-bundle-id"}))
 		})
 	})
 
 	Describe("StatsCommand", func() {
 		It("creates an *exec.Cmd to get the state of the bundle", func() {
 			cmd := goci.StatsCommand("my-bundle-id", "log.file")
-			Expect(cmd.Args).To(Equal([]string{"funC", "--log", "log.file", "events", "--stats", "my-bundle-id"}))
+			Expect(cmd.Args).To(Equal([]string{"funC", "--debug", "--log", "log.file", "events", "--stats", "my-bundle-id"}))
 		})
 	})
 
 	Describe("DeleteCommand", func() {
 		It("creates an *exec.Cmd to delete the bundle", func() {
-			cmd := goci.DeleteCommand("my-bundle-id")
-			Expect(cmd.Args).To(Equal([]string{"funC", "delete", "my-bundle-id"}))
+			cmd := goci.DeleteCommand("my-bundle-id", "log.file")
+			Expect(cmd.Args).To(Equal([]string{"funC", "--debug", "--log", "log.file", "delete", "my-bundle-id"}))
 		})
 	})
 })
