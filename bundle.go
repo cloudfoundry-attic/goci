@@ -1,6 +1,6 @@
 package goci
 
-import "github.com/opencontainers/specs/specs-go"
+import "github.com/opencontainers/runtime-spec/specs-go"
 
 // Bndl represents an in-memory OCI bundle
 type Bndl struct {
