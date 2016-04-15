@@ -2,6 +2,7 @@ package goci
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -14,7 +15,7 @@ func (b *BndlLoader) Load(path string) (*Bndl, error) {
 	bundle := Bndl{}
 	err := readJsonInto(filepath.Join(path, "config.json"), &bundle.Spec)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to load bundle: %s", err)
 	}
 
 	return &bundle, nil
@@ -27,7 +28,7 @@ func (b *Bndl) Save(path string) error {
 func save(value interface{}, path string) error {
 	w, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0755)
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to save bundle: %s", err)
 	}
 
 	return json.NewEncoder(w).Encode(value)
@@ -38,6 +39,5 @@ func readJsonInto(path string, object interface{}) error {
 	if err != nil {
 		return err
 	}
-	json.Unmarshal(runtimeContents, object)
-	return nil
+	return json.Unmarshal(runtimeContents, object)
 }
