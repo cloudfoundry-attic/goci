@@ -31,6 +31,15 @@ func (b Bndl) WithProcess(process specs.Process) *Bndl {
 	return &b
 }
 
+func (b Bndl) Hostname() string {
+	return b.Spec.Hostname
+}
+
+func (b Bndl) WithHostname(hostname string) *Bndl {
+	b.Spec.Hostname = hostname
+	return &b
+}
+
 func (b Bndl) Process() specs.Process {
 	return b.Spec.Process
 }

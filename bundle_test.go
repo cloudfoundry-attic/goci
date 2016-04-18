@@ -19,6 +19,13 @@ var _ = Describe("Bundle", func() {
 		Expect(initialBundle.Spec.Version).To(Equal("0.2.0"))
 	})
 
+	Describe("WithHostname", func() {
+		It("sets the Hostname in the bundle", func() {
+			returnedBundle := initialBundle.WithHostname("hostname")
+			Expect(returnedBundle.Hostname()).To(Equal("hostname"))
+		})
+	})
+
 	Describe("WithCapabilities", func() {
 		It("adds capabilities to the bundle", func() {
 			returnedBundle := initialBundle.WithCapabilities("growtulips", "waterspuds")
