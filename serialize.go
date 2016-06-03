@@ -11,17 +11,17 @@ import (
 type BndlLoader struct {
 }
 
-func (b *BndlLoader) Load(path string) (*Bndl, error) {
+func (b *BndlLoader) Load(path string) (Bndl, error) {
 	bundle := Bndl{}
 	err := readJsonInto(filepath.Join(path, "config.json"), &bundle.Spec)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to load bundle: %s", err)
+		return bundle, fmt.Errorf("Failed to load bundle: %s", err)
 	}
 
-	return &bundle, nil
+	return bundle, nil
 }
 
-func (b *Bndl) Save(path string) error {
+func (b Bndl) Save(path string) error {
 	return save(b.Spec, filepath.Join(path, "config.json"))
 }
 

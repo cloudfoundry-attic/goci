@@ -17,7 +17,7 @@ var _ = Describe("Bundle Serialization", func() {
 
 	var (
 		tmp   string
-		bndle *goci.Bndl
+		bndle goci.Bndl
 	)
 
 	BeforeEach(func() {
@@ -25,7 +25,7 @@ var _ = Describe("Bundle Serialization", func() {
 		tmp, err = ioutil.TempDir("", "gocitest")
 		Expect(err).NotTo(HaveOccurred())
 
-		bndle = &goci.Bndl{
+		bndle = goci.Bndl{
 			Spec: specs.Spec{
 				Version: "abcd",
 				Mounts:  []specs.Mount{},

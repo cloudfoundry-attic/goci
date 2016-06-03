@@ -8,8 +8,8 @@ import (
 )
 
 var _ = Describe("Bundle", func() {
-	var initialBundle *goci.Bndl
-	var returnedBundle *goci.Bndl
+	var initialBundle goci.Bndl
+	var returnedBundle goci.Bndl
 
 	BeforeEach(func() {
 		initialBundle = goci.Bundle()
