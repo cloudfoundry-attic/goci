@@ -28,7 +28,6 @@ var _ = Describe("Bundle Serialization", func() {
 		bndle = goci.Bndl{
 			Spec: specs.Spec{
 				Version: "abcd",
-				Mounts:  []specs.Mount{},
 			},
 		}
 
@@ -45,7 +44,6 @@ var _ = Describe("Bundle Serialization", func() {
 			Expect(json.NewDecoder(mustOpen(path.Join(tmp, "config.json"))).Decode(&configJson)).To(Succeed())
 
 			Expect(configJson).To(HaveKeyWithValue("ociVersion", Equal("abcd")))
-			Expect(configJson).To(HaveKey("mounts"))
 		})
 
 		Context("when saving fails", func() {
