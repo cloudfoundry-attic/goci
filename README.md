@@ -1,8 +1,8 @@
 A Golang API for working with OCI containers. Go OCI. GOCI. 
 
-# THIS LIBRARY HAS MERGED INTO GUARDIAN AND WILL NO LONGER BE MAINTAINED AT THIS LOCATION
+## THIS LIBRARY HAS MERGED INTO GUARDIAN AND WILL NO LONGER BE MAINTAINED AT THIS LOCATION
 
-It can be found at in the [guardian repository](https://github.com/cloudfoundry-incubator/guardian/tree/master/rundmc/goci)
+It can be found in the [guardian repository](https://github.com/cloudfoundry-incubator/guardian/tree/master/rundmc/goci)
 
 # API
 
